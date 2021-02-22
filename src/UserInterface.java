@@ -12,10 +12,8 @@ public class UserInterface {
         userLogin();
 
         // menu page 0
-        System.out.println("Hej och välkommen till den makalöst bra skobutiken!");
-        System.out.println("1. Skobutik");
-        System.out.println("2. Visa Varukorg");
-        System.out.println("3. Betala och Avsluta");
+        showMainMenu();
+
 
         // menu page 1
         System.out.println("--- Skobutiken ---");
@@ -50,4 +48,30 @@ public class UserInterface {
         }
     }
 
+    private void showMainMenu() {
+        System.out.println("Hej och välkommen till den makalöst bra skobutiken!");
+        System.out.println("1. Skobutik");
+        System.out.println("2. Visa Varukorg");
+        System.out.println("3. Betala och Avsluta");
+
+        System.out.println("Gör ditt val: ");
+        String userinput = scan.nextLine();
+        if(userinput.equalsIgnoreCase("1")){
+            showShoeList();
+        }else if(userinput.equalsIgnoreCase("2")){
+            showShoppinglist();
+        }else if(userinput.equalsIgnoreCase("3")){
+            completePurchase();
+        }
+
+    }
+
+    private void showShoeList() {
+    }
+
+    private void showShoppinglist() {
+    }
+
+    private void completePurchase() {
+    }
 }
