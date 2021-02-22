@@ -6,6 +6,7 @@ public class UserInterface {
     private Scanner scan = new Scanner(System.in);
     private Repository repo = new Repository();
 
+    private int userID = -1;
     private int menuPage = 0;
 
     public UserInterface(){
@@ -38,7 +39,9 @@ public class UserInterface {
             System.out.println("Lösenord: ");
             String password = scan.nextLine().trim();
 
-            if(repo.validateLogin(username, password)){
+            userID = repo.validateLogin(username, password);
+
+            if(userID != -1){
                 break;
             }
         }

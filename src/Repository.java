@@ -37,27 +37,29 @@ public class Repository {
         System.out.println(username + " " + password + " " + database);
     }
 
-    public boolean validateLogin(String userLogin, String userPassword) {
+    public int validateLogin(String userLogin, String userPassword) {
 
         int dividerIndex = userLogin.indexOf(".");
         String realPassword = null;
+        int userID = -1;
 
         try (Connection con = DriverManager.getConnection(database, username, password)) {
-            PreparedStatement statement = con.prepareStatement("SELECT förnamn,efternamn,lösenord FROM kund WHERE förnamn like ? AND efternamn like ?");
+            PreparedStatement statement = con.prepareStatement("SELECT id,förnamn,efternamn,lösenord FROM kund WHERE förnamn like ? AND efternamn like ?");
             statement.setString(1, userLogin.substring(0, dividerIndex));
             statement.setString(2, userLogin.substring(dividerIndex + 1));
             ResultSet res = statement.executeQuery();
             if (res.next()) {
-                realPassword = res.getString(3);
+                userID = res.getInt(1);
+                realPassword = res.getString(4);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
         if (userPassword.equals(realPassword)) {
-            return true;
+            return userID;
         } else {
-            return false;
+            return -1;
         }
     }
 
