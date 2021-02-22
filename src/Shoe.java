@@ -1,20 +1,21 @@
+import java.util.ArrayList;
+import java.util.List;
+
 public class Shoe {
-    private int id;
     private String color;
     private int size;
     private int price;
     private Producer producer;
+    private List<Model> model;
+    private int amount;
 
-    public Shoe(int id, String color, int size, int price, Producer producer) {
-        this.id = id;
+    public Shoe(String color, int size, int price, Producer producer, int amount) {
         this.color = color;
         this.size = size;
         this.price = price;
         this.producer = producer;
-    }
-
-    public int getId() {
-        return id;
+        this.model = new ArrayList<>();
+        this.amount = amount;
     }
 
     public String getColor() {
@@ -32,4 +33,14 @@ public class Shoe {
     public Producer getProducer() {
         return producer;
     }
+
+    public int getAmount() {
+        return amount;
+    }
+
+    public void addModel(Model model) {
+        this.model.add(model);
+    }
+
+
 }

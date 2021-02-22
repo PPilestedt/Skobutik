@@ -1,14 +1,14 @@
 /**
  * Created by Elliot Åberg Fält
  * Date: 2021-02-22
- * Time: 10:40
+ * Time: 11:15
  * Project: Skobutik
  * Copyright: MIT
  */
-public class Producer {
+public class Model {
     private String name;
 
-    public Producer(String name) {
+    public Model(String name) {
         this.name = name;
     }
 
