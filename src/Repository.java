@@ -14,7 +14,8 @@ public class Repository {
 
         try {
             loadProperties();
-        } catch (IOException e) {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+        } catch (Exception e) {
             e.printStackTrace();
             System.exit(0);
         }
@@ -39,6 +40,8 @@ public class Repository {
 
         int dividerIndex = userLogin.indexOf(".");
         String realPassword = null;
+
+
 
         try (Connection con = DriverManager.getConnection(username, password, database)) {
             PreparedStatement statement = con.prepareStatement("SELECT förnamn,efternamn,lösenord FROM kund WHERE förnamn like ? AND efternamn like ?");
