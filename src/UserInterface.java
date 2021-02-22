@@ -90,7 +90,8 @@ public class UserInterface {
         System.out.println("Gör ditt val: ");
         String userinput = scan.nextLine();
         if(userinput.equalsIgnoreCase("1")){
-            //varukorg
+            repo.addToCart(userID,shoe);
+            System.out.println("Tillagt i varukorgen");
         }else if(userinput.equalsIgnoreCase("2")){
             //visa omdöme
         }else if(userinput.equalsIgnoreCase("3")){
@@ -104,6 +105,6 @@ public class UserInterface {
     }
 
     private void completePurchase() {
-
+        //TODO: visa totalsumman och sätt betald till true
     }
 }

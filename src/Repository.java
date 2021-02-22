@@ -93,13 +93,17 @@ public class Repository {
     public List<Shoe> getShoeList() {
         List<Shoe> listOfShoes = new ArrayList<>();
         try (Connection con = DriverManager.getConnection(database, username, password)) {
-            PreparedStatement statement = con.prepareStatement("SELECT färg, storlek, pris, märke.namn, lager.antal, sko.id FROM sko INNER JOIN märke ON märke.id = sko.märkesid INNER JOIN lager ON lager.skoid = sko.id");
+            PreparedStatement statement = con.prepareStatement(
+                        "SELECT färg, storlek, pris, märke.namn, lager.antal, sko.id " +
+                            "FROM sko " +
+                            "INNER JOIN märke ON märke.id = sko.märkesid " +
+                            "INNER JOIN lager ON lager.skoid = sko.id");
             ResultSet res = statement.executeQuery();
             while(res.next()) {
                 int amount = res.getInt(5);
                 if (amount > 0) {
-                    Shoe tempShoe = new Shoe(res.getString(1), res.getInt(2), res.getInt(3), new Producer(res.getString(4)), amount);
-                    for (Model model : getModels(res.getInt(6))) {
+                    Shoe tempShoe = new Shoe(res.getInt(6),res.getString(1), res.getInt(2), res.getInt(3), new Producer(res.getString(4)), amount);
+                    for (Model model : getModels(tempShoe.getId())) {
                         tempShoe.addModel(model);
                     }
                     listOfShoes.add(tempShoe);
@@ -109,5 +113,32 @@ public class Repository {
             e.printStackTrace();
         }
         return listOfShoes;
+    }
+
+    public void addToCart(int userID, Shoe shoe) {
+
+        int orderID = 0;
+
+        try (Connection con = DriverManager.getConnection(database, username, password)) {
+
+            PreparedStatement stmt = con.prepareStatement("SELECT id FROM beställning where kundid = ? AND betald IS FALSE");
+            stmt.setInt(1,userID);
+            ResultSet res = stmt.executeQuery();
+            while(res.next()) {
+                orderID = res.getInt(1);
+            }
+            CallableStatement statement = con.prepareCall("CALL addToCart(?,?,?)");
+            statement.setInt(1,userID);
+            if(orderID == 0) {
+                statement.setNull(2, Types.INTEGER);
+            }else{
+                statement.setInt(2,orderID);
+            }
+            statement.setInt(3,shoe.getId());
+            statement.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            //TODO: Felhantering om vi hinner
+        }
     }
 }

@@ -8,14 +8,20 @@ public class Shoe {
     private Producer producer;
     private List<Model> model;
     private int amount = 1;
+    private int id;
 
-    public Shoe(String color, int size, int price, Producer producer, int amount) {
+    public int getId() {
+        return id;
+    }
+
+    public Shoe(int id, String color, int size, int price, Producer producer, int amount) {
         this.color = color;
         this.size = size;
         this.price = price;
         this.producer = producer;
         this.model = new ArrayList<>();
         this.amount = amount;
+        this.id = id;
     }
 
     public Shoe(String color, int size, int price, Producer producer) {
