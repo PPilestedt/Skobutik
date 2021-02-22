@@ -61,15 +61,46 @@ public class Repository {
         }
     }
 
+    private List<Model> getModels(int shoeId) {
+        List<Model> models = new ArrayList<>();
+        List<Model> shoeModels = new ArrayList<>();
+        try (Connection con = DriverManager.getConnection(database, username, password)) {
+            PreparedStatement statement = con.prepareStatement("SELECT namn FROM modell");
+            ResultSet res = statement.executeQuery();
+            while (res.next()) {
+                models.add(new Model(res.getString(1)));
+            }
+            PreparedStatement statement1 = con.prepareStatement("SELECT modellid FROM typ WHERE skoid = ?");
+            statement1.setInt(1, shoeId);
+            ResultSet res1 = statement1.executeQuery();
+            while (res1.next()) {
+                switch (res1.getInt("modellid")) {
+                    case 1 -> shoeModels.add(models.get(0));
+                    case 2 -> shoeModels.add(models.get(1));
+                    case 3 -> shoeModels.add(models.get(2));
+                    case 4 -> shoeModels.add(models.get(3));
+                    case 5 -> shoeModels.add(models.get(4));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return shoeModels;
+    }
+
     public List<Shoe> getShoeList() {
         List<Shoe> listOfShoes = new ArrayList<>();
         try (Connection con = DriverManager.getConnection(database, username, password)) {
-            PreparedStatement statement = con.prepareStatement("SELECT färg, storlek, pris, märke.namn, lager.antal FROM sko INNER JOIN märke ON märke.id = sko.märkesid INNER JOIN lager ON lager.skoid = sko.id");
+            PreparedStatement statement = con.prepareStatement("SELECT färg, storlek, pris, märke.namn, lager.antal, sko.id FROM sko INNER JOIN märke ON märke.id = sko.märkesid INNER JOIN lager ON lager.skoid = sko.id");
             ResultSet res = statement.executeQuery();
             while(res.next()) {
                 int amount = res.getInt(5);
                 if (amount > 0) {
-                    listOfShoes.add(new Shoe(res.getString(1), res.getInt(2), res.getInt(3), new Producer(res.getString(4)), amount));
+                    Shoe tempShoe = new Shoe(res.getString(1), res.getInt(2), res.getInt(3), new Producer(res.getString(4)), amount);
+                    for (Model model : getModels(res.getInt(6))) {
+                        tempShoe.addModel(model);
+                    }
+                    listOfShoes.add(tempShoe);
                 }
             }
         } catch (SQLException e) {
