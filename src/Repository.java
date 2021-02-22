@@ -38,7 +38,7 @@ public class Repository {
             }
 
         }else{
-            throw new FileNotFoundException("hittade inte propertiesfilen");
+            throw new FileNotFoundException("Could not find properties file " + propertiesPath);
         }
 
 
