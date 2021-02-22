@@ -11,16 +11,16 @@ public class Rating {
     private int score;
     private String comment;
     private Shoe shoe;
-    private Customer customerId;
+    private Customer customer;
 
     public Rating () {}
 
-    public Rating(int id, int score, String comment, Shoe shoe, Customer customerId) {
+    public Rating(int id, int score, String comment, Shoe shoe, Customer customer) {
         this.id = id;
         this.score = score;
         this.comment = comment;
         this.shoe = shoe;
-        this.customerId = customerId;
+        this.customer = customer;
     }
 
     public int getId() {
@@ -51,12 +51,12 @@ public class Rating {
         this.shoe = shoe;
     }
 
-    public Customer getCustomerId() {
-        return customerId;
+    public Customer getCustomer() {
+        return customer;
     }
 
-    public void setCustomerId(Customer customerId) {
-        this.customerId = customerId;
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
     }
 }
 
