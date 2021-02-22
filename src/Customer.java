@@ -1,4 +1,4 @@
-public class Kund {
+public class Customer {
 
     private int id;
     private String firstName;
@@ -6,9 +6,9 @@ public class Kund {
     private String city;
     private int password;
 
-    public Kund() { }
+    public Customer() { }
 
-    public Kund (int id, String firstName, String lastName, String city, int password){
+    public Customer(int id, String firstName, String lastName, String city, int password){
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
