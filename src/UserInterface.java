@@ -41,7 +41,7 @@ public class UserInterface {
         String username = scan.nextLine().trim();
         String password = scan.nextLine().trim();
 
-        repo.validateLogin(username,password);
+        System.out.println(repo.validateLogin(username,password));
 
     }
 
