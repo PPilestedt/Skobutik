@@ -4,11 +4,11 @@ public class Customer {
     private String firstName;
     private String lastName;
     private String city;
-    private int password;
+    private String password;
 
     public Customer() { }
 
-    public Customer(int id, String firstName, String lastName, String city, int password){
+    public Customer(int id, String firstName, String lastName, String city, String password){
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -44,7 +44,7 @@ public class Customer {
         this.city = city;
     }
 
-    public int getPassword() {
+    public String getPassword() {
         return password;
     }
 
