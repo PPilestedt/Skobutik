@@ -5,5 +5,8 @@ public class Skobutik {
         System.out.println("Loading properties");
         Repository repo = new Repository();
         System.out.println("Properties Loaded");
+
+        System.out.println("starting user interface");
+        new UserInterface();
     }
 }
