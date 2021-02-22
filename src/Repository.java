@@ -58,4 +58,33 @@ public class Repository {
             return false;
         }
     }
+
+    public String completePurchase() throws SQLException {
+
+        String query = "CALL addToCart";
+        String errormessage = "";
+        ResultSet rs = null;
+        int slutsumma = 0;
+
+        try (Connection con = DriverManager.getConnection(database, username, password)) {
+            PreparedStatement addOrderPricesStmt = con.prepareStatement("SELECT pris from sko(beställning)");
+            //stmt.setString(1, beställning); -- hämtar vi in beställning
+            rs = addOrderPricesStmt.executeQuery();
+            while (rs.next()) {
+                //slutsumma = rs.getInt();
+                if (slutsumma <= 0) {
+                    System.out.println("Det finns inget i din varukorg av värde");
+                }
+            }
+        }catch (SQLException e){
+            e.printStackTrace();
+            return "Kan inte visa beställning: " ; //beställning;
+        }
+        return " Den totala summan i din beställning är " + slutsumma;
+    }
+
+
+
+
+
 }
