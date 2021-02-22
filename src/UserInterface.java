@@ -36,14 +36,18 @@ public class UserInterface {
     }
 
     public void userLogin(){
-        System.out.println("skriv in användarnamn och lösenord... i klartext ;) (lovar att inte läcka ut info på nätet)");
-        System.out.println("Användarnamn: ");
-        String username = scan.nextLine().trim();
-        System.out.println("Lösenord: ");
-        String password = scan.nextLine().trim();
 
-        System.out.println(repo.validateLogin(username,password));
+        while(true) {
+            System.out.println("skriv in användarnamn och lösenord... i klartext ;) (lovar att inte läcka ut info på nätet)");
+            System.out.println("Användarnamn: ");
+            String username = scan.nextLine().trim();
+            System.out.println("Lösenord: ");
+            String password = scan.nextLine().trim();
 
+            if(repo.validateLogin(username, password)){
+                break;
+            }
+        }
     }
 
 }

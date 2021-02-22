@@ -33,7 +33,6 @@ public class Repository {
         database = prop.getProperty("database", "localhost");
 
         System.out.println(username + " " + password + " " + database);
-
     }
 
     public boolean validateLogin(String userLogin, String userPassword) {
@@ -41,14 +40,14 @@ public class Repository {
         int dividerIndex = userLogin.indexOf(".");
         String realPassword = null;
 
-
-
-        try (Connection con = DriverManager.getConnection(username, password, database)) {
+        try (Connection con = DriverManager.getConnection(database, username, password)) {
             PreparedStatement statement = con.prepareStatement("SELECT förnamn,efternamn,lösenord FROM kund WHERE förnamn like ? AND efternamn like ?");
             statement.setString(1, userLogin.substring(0, dividerIndex));
             statement.setString(2, userLogin.substring(dividerIndex + 1));
             ResultSet res = statement.executeQuery();
-            realPassword = res.getString(3);
+            if (res.next()) {
+                realPassword = res.getString(3);
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
