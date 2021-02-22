@@ -1,6 +1,8 @@
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 public class Repository {
@@ -57,5 +59,22 @@ public class Repository {
         } else {
             return false;
         }
+    }
+
+    public List<Shoe> getShoeList() {
+        List<Shoe> listOfShoes = new ArrayList<>();
+        try (Connection con = DriverManager.getConnection(database, username, password)) {
+            PreparedStatement statement = con.prepareStatement("SELECT färg, storlek, pris, märke.namn, lager.antal FROM sko INNER JOIN märke ON märke.id = sko.märkesid INNER JOIN lager ON lager.skoid = sko.id");
+            ResultSet res = statement.executeQuery();
+            while(res.next()) {
+                int amount = res.getInt(5);
+                if (amount > 0) {
+                    listOfShoes.add(new Shoe(res.getString(1), res.getInt(2), res.getInt(3), new Producer(res.getString(4)), amount));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return listOfShoes;
     }
 }

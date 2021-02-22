@@ -1,3 +1,4 @@
+import java.util.List;
 import java.util.Scanner;
 
 public class UserInterface {
@@ -67,6 +68,10 @@ public class UserInterface {
     }
 
     private void showShoeList() {
+        List<Shoe> shoeList = repo.getShoeList();
+        for (int i = 1; i <= shoeList.size(); i++) {
+            System.out.println(i + ". " + shoeList.get(i-1));
+        }
     }
 
     private void showShoppinglist() {
