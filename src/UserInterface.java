@@ -58,7 +58,7 @@ public class UserInterface {
         System.out.println("Gör ditt val: ");
         String userinput = scan.nextLine();
         if(userinput.equalsIgnoreCase("1")){
-            showShoeList();
+            showShoeListMenu();
         }else if(userinput.equalsIgnoreCase("2")){
             showShoppinglist();
         }else if(userinput.equalsIgnoreCase("3")){
@@ -67,7 +67,7 @@ public class UserInterface {
 
     }
 
-    private void showShoeList() {
+    private void showShoeListMenu() {
         List<Shoe> shoeList = repo.getShoeList();
         for (int i = 1; i <= shoeList.size(); i++) {
             System.out.println(i + ". " + shoeList.get(i-1));
