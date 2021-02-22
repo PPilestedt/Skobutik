@@ -23,12 +23,7 @@ public class UserInterface {
         System.out.println("backa");
 
         // menu page 2
-        System.out.println("--- skomodellen (märke och färg och storlek är namnet på skon) ---");
-        System.out.println("Priset visas");
-        System.out.println("1. Lägg till i varukorg");
-        System.out.println("2. Visa omdöme");
-        System.out.println("3. Lämna omdöme");
-        System.out.println("4. Backa");
+
 
         System.out.println("--- Visa varukorg ---");
         System.out.println("1.Radera en post");
@@ -64,7 +59,6 @@ public class UserInterface {
         }else if(userinput.equalsIgnoreCase("3")){
             completePurchase();
         }
-
     }
 
     private void showShoeListMenu() {
@@ -72,11 +66,41 @@ public class UserInterface {
         for (int i = 1; i <= shoeList.size(); i++) {
             System.out.println(i + ". " + shoeList.get(i-1));
         }
+
+        System.out.println("Gör ditt val: ");
+        int userinput = Integer.parseInt(scan.nextLine());
+
+        showShoeDetails(shoeList.get(userinput-1));
+
+    }
+
+    private void showShoeDetails(Shoe shoe) {
+
+        System.out.println("--- " + shoe.toString() + " ---");
+        System.out.println("Pris: " + shoe.getPrice());
+        System.out.println("");
+        System.out.println("1. Lägg till i varukorg");
+        System.out.println("2. Visa omdöme");
+        System.out.println("3. Lämna omdöme");
+        System.out.println("4. Backa");
+
+        System.out.println("Gör ditt val: ");
+        String userinput = scan.nextLine();
+        if(userinput.equalsIgnoreCase("1")){
+            //varukorg
+        }else if(userinput.equalsIgnoreCase("2")){
+            //visa omdöme
+        }else if(userinput.equalsIgnoreCase("3")){
+            //adda omdöme
+        }else if(userinput.equalsIgnoreCase("4")){
+            showShoeListMenu();
+        }
     }
 
     private void showShoppinglist() {
     }
 
     private void completePurchase() {
+
     }
 }
