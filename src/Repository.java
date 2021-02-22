@@ -15,7 +15,7 @@ public class Repository {
         try {
             loadProperties();
         } catch (FileNotFoundException e) {
-            System.out.println("Error loading proerties file");
+            System.out.println("Error loading proerties");
             System.exit(0);
         }
 
