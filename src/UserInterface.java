@@ -1,4 +1,6 @@
+import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 public class UserInterface {
@@ -7,27 +9,10 @@ public class UserInterface {
     private Repository repo = new Repository();
 
     private int userID = -1;
-    private int menuPage = 0;
 
     public UserInterface(){
-
         userLogin();
-
-        // menu page 0
         showMainMenu();
-
-
-        // menu page 1
-        System.out.println("--- Skobutiken ---");
-        System.out.println("radda med skor visas ...");
-        System.out.println("välj sko 1.2.3.4.5.6");
-        System.out.println("backa");
-
-        // menu page 2
-
-
-        System.out.println("--- Visa varukorg ---");
-        System.out.println("1.Radera en post");
     }
 
     public void userLogin(){
@@ -81,7 +66,7 @@ public class UserInterface {
 
         System.out.println("--- " + shoe.toString() + " ---");
         System.out.println("Pris: " + shoe.getPrice());
-        System.out.println("");
+        System.out.println();
         System.out.println("1. Lägg till i varukorg");
         System.out.println("2. Visa omdöme");
         System.out.println("3. Lämna omdöme");
@@ -92,19 +77,35 @@ public class UserInterface {
         if(userinput.equalsIgnoreCase("1")){
             repo.addToCart(userID,shoe);
             System.out.println("Tillagt i varukorgen");
+            showMainMenu();
         }else if(userinput.equalsIgnoreCase("2")){
-            //visa omdöme
+            //TODO: visa omdöme
         }else if(userinput.equalsIgnoreCase("3")){
-            //adda omdöme
+            //TODO: adda omdöme
         }else if(userinput.equalsIgnoreCase("4")){
             showShoeListMenu();
         }
     }
 
     private void showShoppinglist() {
+        System.out.println("Varukorgen: ");
+        Map<Shoe, Integer> shoppingList = repo.getShoppingList();
+        for (Shoe shoe : shoppingList.keySet()) {
+            System.out.println("Sko: " + shoe + ", antal: " + shoppingList.get(shoe));
+        }
+        showMainMenu();
+        //TODO: Kunna ta bort från varukorgen om tid finns
     }
 
     private void completePurchase() {
-        //TODO: visa totalsumman och sätt betald till true
+        int sum = 0;
+        Map<Shoe, Integer> shoppinglist = repo.getShoppingList();
+        for (Shoe shoe : shoppinglist.keySet()) {
+            sum += shoe.getPrice();
+        }
+        System.out.println("Summan blir: " + sum);
+        repo.payOrder(userID);
+        System.out.println("Varukorgen är betald.");
+        System.exit(0);
     }
 }

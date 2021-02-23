@@ -1,9 +1,7 @@
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
 public class Repository {
 
@@ -74,9 +72,9 @@ public class Repository {
             }
             PreparedStatement statement1 = con.prepareStatement("SELECT modellid FROM typ WHERE skoid = ?");
             statement1.setInt(1, shoeId);
-            ResultSet res1 = statement1.executeQuery();
-            while (res1.next()) {
-                switch (res1.getInt("modellid")) {
+            res = statement1.executeQuery();
+            while (res.next()) {
+                switch (res.getInt("modellid")) {
                     case 1 -> shoeModels.add(models.get(0));
                     case 2 -> shoeModels.add(models.get(1));
                     case 3 -> shoeModels.add(models.get(2));
@@ -94,15 +92,15 @@ public class Repository {
         List<Shoe> listOfShoes = new ArrayList<>();
         try (Connection con = DriverManager.getConnection(database, username, password)) {
             PreparedStatement statement = con.prepareStatement(
-                        "SELECT färg, storlek, pris, märke.namn, lager.antal, sko.id " +
+                    "SELECT färg, storlek, pris, märke.namn, lager.antal, sko.id " +
                             "FROM sko " +
                             "INNER JOIN märke ON märke.id = sko.märkesid " +
                             "INNER JOIN lager ON lager.skoid = sko.id");
             ResultSet res = statement.executeQuery();
-            while(res.next()) {
+            while (res.next()) {
                 int amount = res.getInt(5);
                 if (amount > 0) {
-                    Shoe tempShoe = new Shoe(res.getInt(6),res.getString(1), res.getInt(2), res.getInt(3), new Producer(res.getString(4)), amount);
+                    Shoe tempShoe = new Shoe(res.getInt(6), res.getString(1), res.getInt(2), res.getInt(3), new Producer(res.getString(4)), amount);
                     for (Model model : getModels(tempShoe.getId())) {
                         tempShoe.addModel(model);
                     }
@@ -122,23 +120,87 @@ public class Repository {
         try (Connection con = DriverManager.getConnection(database, username, password)) {
 
             PreparedStatement stmt = con.prepareStatement("SELECT id FROM beställning where kundid = ? AND betald IS FALSE");
-            stmt.setInt(1,userID);
+            stmt.setInt(1, userID);
             ResultSet res = stmt.executeQuery();
-            while(res.next()) {
+            while (res.next()) {
                 orderID = res.getInt(1);
             }
             CallableStatement statement = con.prepareCall("CALL addToCart(?,?,?)");
-            statement.setInt(1,userID);
-            if(orderID == 0) {
+            statement.setInt(1, userID);
+            if (orderID == 0) {
                 statement.setNull(2, Types.INTEGER);
-            }else{
-                statement.setInt(2,orderID);
+            } else {
+                statement.setInt(2, orderID);
             }
-            statement.setInt(3,shoe.getId());
+            statement.setInt(3, shoe.getId());
             statement.execute();
         } catch (SQLException e) {
             e.printStackTrace();
             //TODO: Felhantering om vi hinner
+        }
+    }
+
+    private Shoe getShoe(int shoeID) {
+        Shoe newShoe = null;
+        try (Connection con = DriverManager.getConnection(database, username, password)) {
+            PreparedStatement statement = con.prepareStatement("SELECT färg, storlek, pris, märke.namn, lager.antal " +
+                    "FROM sko " +
+                    "INNER JOIN märke ON märke.id = sko.märkesid " +
+                    "INNER JOIN lager ON lager.skoid = sko.id " +
+                    "WHERE sko.id = ?");
+            statement.setInt(1, shoeID);
+            ResultSet res = statement.executeQuery();
+            while (res.next()) {
+                newShoe = new Shoe(shoeID, res.getString(1), res.getInt(2), res.getInt(3), new Producer(res.getString(4)), res.getInt(5));
+                for (Model model : getModels(shoeID)) {
+                    newShoe.addModel(model);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return newShoe;
+    }
+
+    public Map<Shoe, Integer> getShoppingList() {
+        Map<Shoe, Integer> shoeMap = new HashMap<>();
+        try (Connection con = DriverManager.getConnection(database, username, password)) {
+            PreparedStatement statement = con.prepareStatement("SELECT skoid, antal FROM shoppinglista " +
+                    "INNER JOIN beställning " +
+                    "ON shoppinglista.beställningsid = beställning.id " +
+                    "WHERE beställning.betald is false;");
+            ResultSet res = statement.executeQuery();
+            while (res.next()) {
+                shoeMap.put(getShoe(res.getInt(1)), res.getInt(2));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return shoeMap;
+    }
+
+    public void payOrder(int userID) {
+        Connection con = null;
+        try {
+            con = DriverManager.getConnection(database, username, password);
+            PreparedStatement statement = con.prepareStatement("UPDATE beställning SET betald = 1 WHERE kundid = ?");
+            statement.setInt(1, userID);
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            try {
+                assert con != null;
+                con.rollback();
+            } catch (SQLException ae) {
+                e.printStackTrace();
+            }
+            e.printStackTrace();
+        } finally {
+            try {
+                assert con != null;
+                con.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
 }
