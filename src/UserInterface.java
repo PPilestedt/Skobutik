@@ -76,12 +76,10 @@ public class UserInterface {
             } catch (IndexOutOfBoundsException e){
                 System.out.println("Skon finns inte med i listan. Försök igen");
             }
-
         }
     }
 
     private void showShoeDetails(Shoe shoe) {
-
 
         System.out.println("--- " + shoe.toString() + " ---");
         System.out.println("Pris: " + shoe.getPrice());
@@ -145,9 +143,11 @@ public class UserInterface {
     private void showShoppinglist() {
         System.out.println("Varukorgen: ");
         Map<Shoe, Integer> shoppingList = repo.getShoppingList();
+
         for (Shoe shoe : shoppingList.keySet()) {
             System.out.println("Sko: " + shoe + ", antal: " + shoppingList.get(shoe));
         }
+
         showMainMenu();
         //TODO: Kunna ta bort från varukorgen om tid finns
     }
