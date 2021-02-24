@@ -20,7 +20,7 @@ public class UserInterface {
 
         while (user == null) {
 
-            System.out.println("skriv in användarnamn och lösenord... i klartext ;) (lovar att inte läcka ut info på nätet)");
+            System.out.println("skriv in användarnamn och lösenord");
             System.out.println("Användarnamn: ");
             String username = scan.nextLine().trim();
             System.out.println("Lösenord: ");

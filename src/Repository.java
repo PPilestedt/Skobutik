@@ -41,7 +41,6 @@ public class Repository {
         String realPassword = null;
         Customer customer = null;
 
-        //TODO: fånga string index outofbounds
         try (Connection con = DriverManager.getConnection(database, username, password)) {
             PreparedStatement statement = con.prepareStatement("SELECT id,förnamn,efternamn,lösenord, ort FROM kund WHERE förnamn like ? AND efternamn like ?");
             statement.setString(1, userLogin.substring(0, dividerIndex));
@@ -53,6 +52,8 @@ public class Repository {
             }
         } catch (SQLException e) {
             e.printStackTrace();
+        } catch (StringIndexOutOfBoundsException e){
+            System.out.println("Felaktigt användarnamn/lösenord");
         }
 
         if (userPassword.equals(realPassword)) {
