@@ -367,21 +367,3 @@ call rate(3,3, 40, 'Mina skooor');
 
 select * from betyg
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
