@@ -9,15 +9,11 @@ public class Rating {
 
     private int score;
     private String comment;
-    private Shoe shoe;
     private Customer customer;
 
-    public Rating () {}
-
-    public Rating(int score, String comment, Shoe shoe, Customer customer) {
+    public Rating(int score, String comment, Customer customer) {
         this.score = score;
         this.comment = comment;
-        this.shoe = shoe;
         this.customer = customer;
     }
 
@@ -38,20 +34,20 @@ public class Rating {
         this.comment = comment;
     }
 
-    public Shoe getShoe() {
-        return shoe;
-    }
-
-    public void setShoe(Shoe shoe) {
-        this.shoe = shoe;
-    }
-
     public Customer getCustomer() {
         return customer;
     }
 
     public void setCustomer(Customer customer) {
         this.customer = customer;
+    }
+
+    @Override
+    public String toString() {
+        return "score= " + score +
+                ", comment='" + comment + '\'' +
+                ", customer=" + customer +
+                '}';
     }
 }
 

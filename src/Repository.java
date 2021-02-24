@@ -41,6 +41,7 @@ public class Repository {
         String realPassword = null;
         Customer customer = null;
 
+        //TODO: fånga string index outofbounds
         try (Connection con = DriverManager.getConnection(database, username, password)) {
             PreparedStatement statement = con.prepareStatement("SELECT id,förnamn,efternamn,lösenord, ort FROM kund WHERE förnamn like ? AND efternamn like ?");
             statement.setString(1, userLogin.substring(0, dividerIndex));
@@ -100,10 +101,16 @@ public class Repository {
             while (res.next()) {
                 int amount = res.getInt(5);
                 if (amount > 0) {
-                    Shoe tempShoe = new Shoe(res.getInt(6), res.getString(1), res.getInt(2), res.getInt(3), new Producer(res.getString(4)), amount);
+                    Shoe tempShoe = new Shoe(res.getInt(6),
+                            res.getString(1),
+                            res.getInt(2),
+                            res.getInt(3),
+                            new Producer(res.getString(4)));
                     for (Model model : getModels(tempShoe.getId())) {
                         tempShoe.addModel(model);
                     }
+                    getAverageRating(tempShoe);
+                    getAllRatings(tempShoe);
                     listOfShoes.add(tempShoe);
                 }
             }
@@ -143,15 +150,14 @@ public class Repository {
     private Shoe getShoe(int shoeID) {
         Shoe newShoe = null;
         try (Connection con = DriverManager.getConnection(database, username, password)) {
-            PreparedStatement statement = con.prepareStatement("SELECT färg, storlek, pris, märke.namn, lager.antal " +
+            PreparedStatement statement = con.prepareStatement("SELECT färg, storlek, pris, märke.namn " +
                     "FROM sko " +
                     "INNER JOIN märke ON märke.id = sko.märkesid " +
-                    "INNER JOIN lager ON lager.skoid = sko.id " +
                     "WHERE sko.id = ?");
             statement.setInt(1, shoeID);
             ResultSet res = statement.executeQuery();
             while (res.next()) {
-                newShoe = new Shoe(shoeID, res.getString(1), res.getInt(2), res.getInt(3), new Producer(res.getString(4)), res.getInt(5));
+                newShoe = new Shoe(shoeID, res.getString(1), res.getInt(2), res.getInt(3), new Producer(res.getString(4)));
                 for (Model model : getModels(shoeID)) {
                     newShoe.addModel(model);
                 }
@@ -204,36 +210,74 @@ public class Repository {
         }
     }
 
-    public String addRating(Rating rating)  {
-
-        String query = "INSERT INTO betyg " +
-                "(poäng, kommentar, skoid, kundid) VALUES (?,?,?,?)";
+    public String addRating(Rating rating, int shoeid)  {
+        int rowsAffected = 0;
+        String query = "Call rate(?,?,?,?)";
 
         try (Connection con = DriverManager.getConnection(database, username, password)) {
             PreparedStatement statement = con.prepareStatement(query);
 
-            statement.setInt(1, rating.getScore());
+            statement.setInt(3, rating.getScore());
             if (rating.getComment() == null){
-                statement.setNull(2,Types.VARCHAR);
+                statement.setNull(4,Types.VARCHAR);
             } else {
-                statement.setString(2, rating.getComment());
+                statement.setString(4, rating.getComment());
             }
-            statement.setInt(3, rating.getShoe().getId());
-            statement.setInt(4, rating.getCustomer().getId());
+            statement.setInt(2, shoeid);
+            statement.setInt(1, rating.getCustomer().getId());
 
-            statement.executeUpdate();
+            rowsAffected = statement.executeUpdate();
 
         } catch (SQLException e) {
             e.printStackTrace();
             return "Något gick fel. Betyget är inte tillagt";
         }
-        return "Betyget har lagts till i vårt system.";
+        if(rowsAffected == 0) {
+            return "Det verkar som att du redan har lagt ett betyg!";
+        }else
+            return "Betyget har lagts till i vårt system.";
+
     }
 
+    public void getAverageRating(Shoe shoe){
 
+        try (Connection con = DriverManager.getConnection(database, username, password)) {
+            PreparedStatement statement = con.prepareStatement("SELECT betygstext FROM medelbetygitext WHERE skoid = ?");
+            statement.setInt(1,shoe.getId());
+            ResultSet res = statement.executeQuery();
 
+            while(res.next()){
+                shoe.setAverageRating(res.getString(1));
+            }
 
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
+    public void getAllRatings(Shoe shoe) {
 
+        List<Rating> ratingList = new ArrayList<>();
 
+        try (Connection con = DriverManager.getConnection(database, username, password)) {
+            PreparedStatement statement = con.prepareStatement( "SELECT poäng,kommentar, kundid, förnamn,efternamn, ort FROM betyg " +
+                                                                    "join kund on kund.id = kundid " +
+                                                                    "WHERE skoid = ?");
+            statement.setInt(1,shoe.getId());
+            ResultSet res = statement.executeQuery();
+
+            while(res.next()){
+                shoe.addRating(new Rating(res.getInt(1), res.getString(2),
+                        new Customer(
+                        res.getInt(3),
+                        res.getString(4),
+                        res.getString(5),
+                        res.getString(6))));
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+    }
 }

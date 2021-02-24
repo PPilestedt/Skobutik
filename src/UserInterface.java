@@ -1,4 +1,5 @@
 import java.sql.SQLException;
+import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
@@ -17,7 +18,8 @@ public class UserInterface {
 
     public void userLogin() {
 
-        while (true) {
+        while (user == null) {
+
             System.out.println("skriv in användarnamn och lösenord... i klartext ;) (lovar att inte läcka ut info på nätet)");
             System.out.println("Användarnamn: ");
             String username = scan.nextLine().trim();
@@ -25,10 +27,6 @@ public class UserInterface {
             String password = scan.nextLine().trim();
 
             user = repo.validateLogin(username, password);
-
-            if (user != null) {
-                break;
-            }
         }
     }
 
@@ -37,54 +35,111 @@ public class UserInterface {
         System.out.println("1. Skobutik");
         System.out.println("2. Visa Varukorg");
         System.out.println("3. Betala och Avsluta");
-
-        System.out.println("Gör ditt val: ");
-        String userinput = scan.nextLine();
-        if (userinput.equalsIgnoreCase("1")) {
-            showShoeListMenu();
-        } else if (userinput.equalsIgnoreCase("2")) {
-            showShoppinglist();
-        } else if (userinput.equalsIgnoreCase("3")) {
-            completePurchase();
+        while(true) {
+            try {
+                System.out.println("Gör ditt val i main menu: ");
+                int userinput = scan.nextInt();
+                if (userinput == 1) {
+                    showShoeListMenu();
+                } else if (userinput == 2){
+                    showShoppinglist();
+                } else if (userinput == 3) {
+                    completePurchase();
+                }
+            }catch (InputMismatchException e){
+                System.out.println("Felaktig inmatning. Försök igen");
+                scan.nextLine();
+            }
         }
     }
 
     private void showShoeListMenu() {
+
         List<Shoe> shoeList = repo.getShoeList();
+
+        System.out.println("0. Huvudmeny");
         for (int i = 1; i <= shoeList.size(); i++) {
             System.out.println(i + ". " + shoeList.get(i - 1));
         }
 
-        System.out.println("Gör ditt val: ");
-        int userinput = Integer.parseInt(scan.nextLine());
+        while(true) {
+            System.out.println("Gör ditt val: i show shoelist");
+            try {
+                int userinput = scan.nextInt();
+                if(userinput == 0){
+                    showMainMenu();
+                }else {
+                    showShoeDetails(shoeList.get(userinput - 1));
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("Felaktig inmatning. Försök igen");
+            } catch (IndexOutOfBoundsException e){
+                System.out.println("Skon finns inte med i listan. Försök igen");
+            }
 
-        showShoeDetails(shoeList.get(userinput - 1));
-
+        }
     }
 
     private void showShoeDetails(Shoe shoe) {
 
+
         System.out.println("--- " + shoe.toString() + " ---");
         System.out.println("Pris: " + shoe.getPrice());
+        System.out.println("Medelbetyg: " + shoe.getAverageRating());
         System.out.println();
         System.out.println("1. Lägg till i varukorg");
         System.out.println("2. Visa omdöme");
         System.out.println("3. Lämna omdöme");
         System.out.println("4. Backa");
 
-        System.out.println("Gör ditt val: ");
-        String userinput = scan.nextLine();
-        if (userinput.equalsIgnoreCase("1")) {
-            repo.addToCart(user.getId(), shoe);
-            System.out.println("Tillagt i varukorgen");
-            showMainMenu();
-        } else if (userinput.equalsIgnoreCase("2")) {
-            //TODO: visa omdöme
-        } else if (userinput.equalsIgnoreCase("3")) {
-            rateShoe(shoe);
-        } else if (userinput.equalsIgnoreCase("4")) {
-            showShoeListMenu();
+        while(true) {
+            System.out.println("Gör ditt val i shoe details: ");
+            try{
+                int userinput = scan.nextInt();
+
+                if (userinput == 1) {
+                    repo.addToCart(user.getId(), shoe);
+                    System.out.println("Tillagt i varukorgen");
+                    showMainMenu();
+                } else if (userinput == 2) {
+                    showAllRatings(shoe);
+                } else if (userinput == 3) {
+                    rateShoe(shoe);
+                } else if (userinput == 4) {
+                    showShoeListMenu();
+                }else{
+                    System.out.println("Felaktigt val, Försök igen");
+                }
+
+            }catch (InputMismatchException e){
+                System.out.println("felaktig inmatning, försök igen");
+                scan.nextLine();
+            }
         }
+    }
+
+    private void showAllRatings(Shoe shoe) {
+        String ratingInText;
+        for (Rating rating :
+                shoe.getRatings()) {
+
+            switch (rating.getScore()) {
+                case 10 -> ratingInText = "Missnöjd";
+                case 20 -> ratingInText = "Ganska nöjd";
+                case 30 -> ratingInText = "Nöjd";
+                case 40 -> ratingInText = "Mycket nöjd";
+                default -> ratingInText = "Betyg Saknas";
+            }
+
+            System.out.println("----------");
+            System.out.println("Betyg: " + ratingInText);
+            System.out.println("Kommentar: " + rating.getComment());
+            System.out.println("Kund: " + rating.getCustomer().getFirstName() + " " + rating.getCustomer().getLastName());
+            System.out.println("----------");
+            System.out.println();
+
+        }
+        showMainMenu();
     }
 
     private void showShoppinglist() {
@@ -114,8 +169,8 @@ public class UserInterface {
         int ratingInDigit;
         int points = 0;
         String currentRatingScale = "1-4";
-        String commentYesOrNo = null;
-        String ratingInComment = null;
+        String commentYesOrNo;
+        String ratingInComment;
 
         System.out.println("Vad vill du ge den för betyg?");
         System.out.println("1. Missnöjd");
@@ -136,7 +191,8 @@ public class UserInterface {
             }
             if (points > 0) {
                 break;
-            } scan.nextLine();
+            }
+            scan.nextLine();
         }
         System.out.println("Tack! Vill du även kommentera skon? [y/n]");
         while (true) {
@@ -152,8 +208,8 @@ public class UserInterface {
                 System.out.println("Skriv vänligen Y eller N");
             }
         }
-        System.out.println("Tack för ditt omdöme! Ditt engagemang betyder mycket för oss.");
-        repo.addRating(new Rating(points, ratingInComment, shoe, user));
+        System.out.println(repo.addRating(new Rating(points, ratingInComment, user),shoe.getId()));
+
         showMainMenu();
     }
 
