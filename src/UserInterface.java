@@ -154,6 +154,7 @@ public class UserInterface {
         }
         System.out.println("Tack för ditt omdöme! Ditt engagemang betyder mycket för oss.");
         repo.addRating(new Rating(points, ratingInComment, shoe, user));
+        showMainMenu();
     }
 
 
