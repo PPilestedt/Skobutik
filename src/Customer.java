@@ -8,6 +8,13 @@ public class Customer {
 
     public Customer() { }
 
+    public Customer(int id, String firstName, String lastName, String city){
+        this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.city = city;
+    }
+
     public Customer(int id, String firstName, String lastName, String city, String password){
         this.id = id;
         this.firstName = firstName;

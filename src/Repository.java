@@ -104,6 +104,8 @@ public class Repository {
                     for (Model model : getModels(tempShoe.getId())) {
                         tempShoe.addModel(model);
                     }
+                    getAverageRating(tempShoe);
+                    getAllRatings(tempShoe);
                     listOfShoes.add(tempShoe);
                 }
             }
@@ -204,7 +206,7 @@ public class Repository {
         }
     }
 
-    public String addRating(Rating rating)  {
+    public String addRating(Rating rating, int shoeid)  {
 
         String query = "INSERT INTO betyg " +
                 "(poäng, kommentar, skoid, kundid) VALUES (?,?,?,?)";
@@ -218,7 +220,7 @@ public class Repository {
             } else {
                 statement.setString(2, rating.getComment());
             }
-            statement.setInt(3, rating.getShoe().getId());
+            statement.setInt(3, shoeid);
             statement.setInt(4, rating.getCustomer().getId());
 
             statement.executeUpdate();
@@ -230,10 +232,45 @@ public class Repository {
         return "Betyget har lagts till i vårt system.";
     }
 
+    public void getAverageRating(Shoe shoe){
 
+        try (Connection con = DriverManager.getConnection(database, username, password)) {
+            PreparedStatement statement = con.prepareStatement("SELECT betygstext FROM medelbetygitext WHERE skoid = ?");
+            statement.setInt(1,shoe.getId());
+            ResultSet res = statement.executeQuery();
 
+            while(res.next()){
+                shoe.setAverageRating(res.getString(1));
+            }
 
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
+    public void getAllRatings(Shoe shoe) {
 
+        List<Rating> ratingList = new ArrayList<>();
 
+        try (Connection con = DriverManager.getConnection(database, username, password)) {
+            PreparedStatement statement = con.prepareStatement( "SELECT poäng,kommentar, kundid, förnamn,efternamn, ort FROM betyg " +
+                                                                    "join kund on kund.id = kundid " +
+                                                                    "WHERE skoid = ?");
+            statement.setInt(1,shoe.getId());
+            ResultSet res = statement.executeQuery();
+
+            while(res.next()){
+                shoe.addRating(new Rating(res.getInt(1), res.getString(2),
+                        new Customer(
+                        res.getInt(3),
+                        res.getString(4),
+                        res.getString(5),
+                        res.getString(6))));
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+    }
 }

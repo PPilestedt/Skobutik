@@ -17,7 +17,7 @@ public class UserInterface {
 
     public void userLogin() {
 
-        while (true) {
+        while (user == null) {
             System.out.println("skriv in användarnamn och lösenord... i klartext ;) (lovar att inte läcka ut info på nätet)");
             System.out.println("Användarnamn: ");
             String username = scan.nextLine().trim();
@@ -26,9 +26,6 @@ public class UserInterface {
 
             user = repo.validateLogin(username, password);
 
-            if (user != null) {
-                break;
-            }
         }
     }
 
@@ -64,8 +61,10 @@ public class UserInterface {
 
     private void showShoeDetails(Shoe shoe) {
 
+
         System.out.println("--- " + shoe.toString() + " ---");
         System.out.println("Pris: " + shoe.getPrice());
+        System.out.println("Medelbetyg: " + shoe.getAverageRating());
         System.out.println();
         System.out.println("1. Lägg till i varukorg");
         System.out.println("2. Visa omdöme");
@@ -79,11 +78,35 @@ public class UserInterface {
             System.out.println("Tillagt i varukorgen");
             showMainMenu();
         } else if (userinput.equalsIgnoreCase("2")) {
-            //TODO: visa omdöme
+            showAllRatings(shoe);
         } else if (userinput.equalsIgnoreCase("3")) {
             rateShoe(shoe);
         } else if (userinput.equalsIgnoreCase("4")) {
             showShoeListMenu();
+        }
+    }
+
+    private void showAllRatings(Shoe shoe) {
+        String ratingInText;
+        for (Rating rating :
+                shoe.getRatings()) {
+
+            switch (rating.getScore()) {
+                case 10 -> ratingInText = "Missnöjd";
+                case 20 -> ratingInText = "Ganska nöjd";
+                case 30 -> ratingInText = "Nöjd";
+                case 40 -> ratingInText = "Mycket nöjd";
+                default -> ratingInText = "Betyg Saknas";
+            }
+
+            System.out.println("----------");
+            System.out.println("Betyg: " + ratingInText);
+            System.out.println("Kommentar: " + rating.getComment());
+            System.out.println("Kund: " + rating.getCustomer().getFirstName() + " " + rating.getCustomer().getLastName());
+            System.out.println("----------");
+            System.out.println();
+
+            showMainMenu();
         }
     }
 
@@ -153,7 +176,7 @@ public class UserInterface {
             }
         }
         System.out.println("Tack för ditt omdöme! Ditt engagemang betyder mycket för oss.");
-        repo.addRating(new Rating(points, ratingInComment, shoe, user));
+        repo.addRating(new Rating(points, ratingInComment, user),shoe.getId());
     }
 
 
