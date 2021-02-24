@@ -41,6 +41,7 @@ public class Repository {
         String realPassword = null;
         Customer customer = null;
 
+        //TODO: fånga string index outofbounds
         try (Connection con = DriverManager.getConnection(database, username, password)) {
             PreparedStatement statement = con.prepareStatement("SELECT id,förnamn,efternamn,lösenord, ort FROM kund WHERE förnamn like ? AND efternamn like ?");
             statement.setString(1, userLogin.substring(0, dividerIndex));
@@ -207,29 +208,32 @@ public class Repository {
     }
 
     public String addRating(Rating rating, int shoeid)  {
-
-        String query = "INSERT INTO betyg " +
-                "(poäng, kommentar, skoid, kundid) VALUES (?,?,?,?)";
+        int rowsAffected = 0;
+        String query = "Call rate(?,?,?,?)";
 
         try (Connection con = DriverManager.getConnection(database, username, password)) {
             PreparedStatement statement = con.prepareStatement(query);
 
-            statement.setInt(1, rating.getScore());
+            statement.setInt(3, rating.getScore());
             if (rating.getComment() == null){
-                statement.setNull(2,Types.VARCHAR);
+                statement.setNull(4,Types.VARCHAR);
             } else {
-                statement.setString(2, rating.getComment());
+                statement.setString(4, rating.getComment());
             }
-            statement.setInt(3, shoeid);
-            statement.setInt(4, rating.getCustomer().getId());
+            statement.setInt(2, shoeid);
+            statement.setInt(1, rating.getCustomer().getId());
 
-            statement.executeUpdate();
+            rowsAffected = statement.executeUpdate();
 
         } catch (SQLException e) {
             e.printStackTrace();
             return "Något gick fel. Betyget är inte tillagt";
         }
-        return "Betyget har lagts till i vårt system.";
+        if(rowsAffected == 0) {
+            return "Det verkar som att du redan har lagt ett betyg!";
+        }else
+            return "Betyget har lagts till i vårt system.";
+
     }
 
     public void getAverageRating(Shoe shoe){
