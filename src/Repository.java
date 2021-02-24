@@ -101,7 +101,11 @@ public class Repository {
             while (res.next()) {
                 int amount = res.getInt(5);
                 if (amount > 0) {
-                    Shoe tempShoe = new Shoe(res.getInt(6), res.getString(1), res.getInt(2), res.getInt(3), new Producer(res.getString(4)), amount);
+                    Shoe tempShoe = new Shoe(res.getInt(6),
+                            res.getString(1),
+                            res.getInt(2),
+                            res.getInt(3),
+                            new Producer(res.getString(4)));
                     for (Model model : getModels(tempShoe.getId())) {
                         tempShoe.addModel(model);
                     }
@@ -146,15 +150,14 @@ public class Repository {
     private Shoe getShoe(int shoeID) {
         Shoe newShoe = null;
         try (Connection con = DriverManager.getConnection(database, username, password)) {
-            PreparedStatement statement = con.prepareStatement("SELECT färg, storlek, pris, märke.namn, lager.antal " +
+            PreparedStatement statement = con.prepareStatement("SELECT färg, storlek, pris, märke.namn " +
                     "FROM sko " +
                     "INNER JOIN märke ON märke.id = sko.märkesid " +
-                    "INNER JOIN lager ON lager.skoid = sko.id " +
                     "WHERE sko.id = ?");
             statement.setInt(1, shoeID);
             ResultSet res = statement.executeQuery();
             while (res.next()) {
-                newShoe = new Shoe(shoeID, res.getString(1), res.getInt(2), res.getInt(3), new Producer(res.getString(4)), res.getInt(5));
+                newShoe = new Shoe(shoeID, res.getString(1), res.getInt(2), res.getInt(3), new Producer(res.getString(4)));
                 for (Model model : getModels(shoeID)) {
                     newShoe.addModel(model);
                 }

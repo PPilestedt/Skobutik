@@ -11,8 +11,6 @@ public class Rating {
     private String comment;
     private Customer customer;
 
-    public Rating () {}
-
     public Rating(int score, String comment, Customer customer) {
         this.score = score;
         this.comment = comment;

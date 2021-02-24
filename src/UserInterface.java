@@ -169,8 +169,8 @@ public class UserInterface {
         int ratingInDigit;
         int points = 0;
         String currentRatingScale = "1-4";
-        String commentYesOrNo = null;
-        String ratingInComment = null;
+        String commentYesOrNo;
+        String ratingInComment;
 
         System.out.println("Vad vill du ge den för betyg?");
         System.out.println("1. Missnöjd");
@@ -191,7 +191,8 @@ public class UserInterface {
             }
             if (points > 0) {
                 break;
-            } scan.nextLine();
+            }
+            scan.nextLine();
         }
         System.out.println("Tack! Vill du även kommentera skon? [y/n]");
         while (true) {

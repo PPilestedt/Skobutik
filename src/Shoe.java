@@ -7,17 +7,15 @@ public class Shoe {
     private int price;
     private Producer producer;
     private List<Model> model;
-    private int amount = 1;
     private int id;
     private List<Rating> ratingList;
     private String averageRating;
 
-    public Shoe(int id, String color, int size, int price, Producer producer, int amount) {
+    public Shoe(int id, String color, int size, int price, Producer producer) {
         this.color = color;
         this.size = size;
         this.price = price;
         this.producer = producer;
-        this.amount = amount;
         this.id = id;
         this.model = new ArrayList<>();
         this.ratingList = new ArrayList<>();
