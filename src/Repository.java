@@ -203,4 +203,30 @@ public class Repository {
             }
         }
     }
+
+    public String addRating(int choiceOfShoe, int ratingInDigit, String ratingInComment) throws SQLException {
+
+        String query = "INSERT INTO betyg " +
+                "(poäng, kommentar, skoid, kundid) VALUES (?,?,?,?) where skoid = ?";
+
+        try (Connection con = DriverManager.getConnection(database, username, password)) {
+            PreparedStatement statement = con.prepareStatement(query);
+
+            statement.setInt(1, ratingInDigit);
+            statement.setString(2, ratingInComment);
+            statement.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return "Något gick fel. Betyget är inte tillagt";
+        }
+        return "Betyget har lagts till i vårt system.";
+    }
+
+
+
+
+
+
+
 }

@@ -81,7 +81,7 @@ public class UserInterface {
         }else if(userinput.equalsIgnoreCase("2")){
             //TODO: visa omdöme
         }else if(userinput.equalsIgnoreCase("3")){
-            //TODO: adda omdöme
+            rateShoe();
         }else if(userinput.equalsIgnoreCase("4")){
             showShoeListMenu();
         }
@@ -108,4 +108,52 @@ public class UserInterface {
         System.out.println("Varukorgen är betald.");
         System.exit(0);
     }
+
+    private void rateShoe() {
+
+        int choiceOfShoe;
+        int ratingInDigit;
+        int lowestRating = 1;
+        int highestRating = 4;
+        int ratingAdjustement = 10;
+        String currentRatingScale = "1-4";
+        String commentYesOrNo = null;
+        String ratingInComment = null;
+
+        System.out.println("Vilken sko vill du ge betyg? ");
+        List<Shoe> shoeList = repo.getShoeList();
+        for (int i = 1; i <= shoeList.size(); i++) {
+            System.out.println(i + ". " + shoeList.get(i-1));
+        }
+        /*
+        Map<Shoe, Integer> shoppingList = repo.getShoppingList();
+        for (Shoe shoe : shoppingList.keySet()) {
+            System.out.println("Sko: " + shoe);
+        }
+         */
+        choiceOfShoe = Integer.parseInt(scan.nextLine());
+        System.out.println("Vad vill du ge den för betyg? [" + currentRatingScale + "]");
+        ratingInDigit = Integer.parseInt(scan.nextLine());
+            if (ratingInDigit >= lowestRating && ratingInDigit <= highestRating) {
+                ratingInDigit = ratingInDigit * ratingAdjustement;
+            } else {
+                System.out.println("Du har inte gett ett betyg mellan " + currentRatingScale);
+                System.exit(0);
+            }
+                System.out.println("Tack! Vill du även kommentera skon? [y/n]");
+                commentYesOrNo = scan.nextLine();
+                if (commentYesOrNo.equalsIgnoreCase("y")) {
+                    System.out.println("Skriv din kommentar: ");
+                    ratingInComment = scan.nextLine();
+                    } else {
+                        ratingInComment = null;
+                    }
+            System.out.println("Tack för ditt omdöme! Ditt engagemang betyder mycket för oss.");
+            //repo.addRating(choiceOfShoe, ratingInDigit, ratingInComment);
+    }
+
+
+
+
+
 }
