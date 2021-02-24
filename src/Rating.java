@@ -7,7 +7,6 @@
  */
 public class Rating {
 
-    private int id;
     private int score;
     private String comment;
     private Shoe shoe;
@@ -15,17 +14,13 @@ public class Rating {
 
     public Rating () {}
 
-    public Rating(int id, int score, String comment, Shoe shoe, Customer customer) {
-        this.id = id;
+    public Rating(int score, String comment, Shoe shoe, Customer customer) {
         this.score = score;
         this.comment = comment;
         this.shoe = shoe;
         this.customer = customer;
     }
 
-    public int getId() {
-        return id;
-    }
 
     public int getScore() {
         return score;

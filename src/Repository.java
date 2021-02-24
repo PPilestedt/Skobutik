@@ -35,29 +35,29 @@ public class Repository {
         System.out.println(username + " " + password + " " + database);
     }
 
-    public int validateLogin(String userLogin, String userPassword) {
+    public Customer validateLogin(String userLogin, String userPassword) {
 
         int dividerIndex = userLogin.indexOf(".");
         String realPassword = null;
-        int userID = -1;
+        Customer customer = null;
 
         try (Connection con = DriverManager.getConnection(database, username, password)) {
-            PreparedStatement statement = con.prepareStatement("SELECT id,förnamn,efternamn,lösenord FROM kund WHERE förnamn like ? AND efternamn like ?");
+            PreparedStatement statement = con.prepareStatement("SELECT id,förnamn,efternamn,lösenord, ort FROM kund WHERE förnamn like ? AND efternamn like ?");
             statement.setString(1, userLogin.substring(0, dividerIndex));
             statement.setString(2, userLogin.substring(dividerIndex + 1));
             ResultSet res = statement.executeQuery();
             if (res.next()) {
-                userID = res.getInt(1);
-                realPassword = res.getString(4);
+                customer = new Customer(res.getInt(1), res.getString(2), res.getString(3), res.getString(5), res.getString(4));
+                realPassword = customer.getPassword();
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
         if (userPassword.equals(realPassword)) {
-            return userID;
+            return customer;
         } else {
-            return -1;
+            return null;
         }
     }
 
@@ -204,16 +204,23 @@ public class Repository {
         }
     }
 
-    public String addRating(int choiceOfShoe, int ratingInDigit, String ratingInComment) throws SQLException {
+    public String addRating(Rating rating)  {
 
         String query = "INSERT INTO betyg " +
-                "(poäng, kommentar, skoid, kundid) VALUES (?,?,?,?) where skoid = ?";
+                "(poäng, kommentar, skoid, kundid) VALUES (?,?,?,?)";
 
         try (Connection con = DriverManager.getConnection(database, username, password)) {
             PreparedStatement statement = con.prepareStatement(query);
 
-            statement.setInt(1, ratingInDigit);
-            statement.setString(2, ratingInComment);
+            statement.setInt(1, rating.getScore());
+            if (rating.getComment() == null){
+                statement.setNull(2,Types.VARCHAR);
+            } else {
+                statement.setString(2, rating.getComment());
+            }
+            statement.setInt(3, rating.getShoe().getId());
+            statement.setInt(4, rating.getCustomer().getId());
+
             statement.executeUpdate();
 
         } catch (SQLException e) {
