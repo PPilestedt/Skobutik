@@ -3,9 +3,6 @@ drop database if exists skodb;
 create database skodb;
 use skodb;
 
-
-
-
 create table if not exists märke(
 id int not null auto_increment,
 primary key (id),
@@ -34,7 +31,6 @@ insert into modell (namn, id) VALUES ('klacksko', 2);
 insert into modell (namn, id) VALUES ('sportsko', 3);
 insert into modell (namn, id) VALUES ('promenadsko', 4);
 insert into modell (namn, id) VALUES ('vandringskänga', 5);
-
 
 
 create table if not exists sko
@@ -366,22 +362,4 @@ delimiter ;
 call rate(3,3, 40, 'Mina skooor');
 
 select * from betyg
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
