@@ -248,7 +248,11 @@ public class Repository {
             ResultSet res = statement.executeQuery();
 
             while(res.next()){
-                shoe.setAverageRating(res.getString(1));
+                String avgrating = res.getString(1);
+                if(avgrating == null)
+                    shoe.setAverageRating("Saknas");
+                else
+                    shoe.setAverageRating(avgrating);
             }
 
         } catch (SQLException e) {
