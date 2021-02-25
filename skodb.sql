@@ -310,16 +310,17 @@ select medelbetyg(2);
 select medelbetyg(6);
 
 create view medelbetygIText as
-select skoid, medelbetyg(skoid) as medelvärde,
-	case 
-		 when medelbetyg(skoid) <= 15 then 'missnöjd'
-		 when medelbetyg(skoid) <= 25 then 'ganska nöjd'
-         when medelbetyg(skoid) <= 35 then 'nöjd'
-		 when medelbetyg(skoid) <= 40 then 'mycket nöjd'
-    end as betygstext
-  
- from betyg
- group by skoid;
+SELECT sko.id AS skoid,
+    MEDELBETYG(betyg.skoid) AS medelvärde,
+    (CASE
+         WHEN (MEDELBETYG(skodb.betyg.skoid) <= 15) THEN 'missnöjd'
+         WHEN (MEDELBETYG(skodb.betyg.skoid) <= 25) THEN 'ganska nöjd'
+         WHEN (MEDELBETYG(skodb.betyg.skoid) <= 35) THEN 'nöjd'
+         WHEN (MEDELBETYG(skodb.betyg.skoid) <= 40) THEN 'mycket nöjd'
+        END) AS betygstext
+FROM skodb.sko
+LEFT JOIN skodb.betyg ON sko.id = betyg.skoid
+GROUP BY sko.id;
  
  -- drop procedure rate;
  delimiter //
